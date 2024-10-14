@@ -14,15 +14,23 @@ services:
       dockerfile: ./Dockerfile
     expose:
       - "8080"
-    # depends_on:
-    #   - auth-service
+    depends_on:
+      - auth-service
+  api-gateway-2:
+    build:
+      context: ./gateway
+      dockerfile: ./Dockerfile
+    expose:
+      - "8080"
+    depends_on:
+      - auth-service
 
-  # auth-service:
-  #   build:
-  #     context: ./authservice
-  #     dockerfile: Dockerfile
-  #   expose:
-  #     - "8080"
+  auth-service:
+    build:
+      context: ./authservice
+      dockerfile: Dockerfile
+    expose:
+      - "8081:8081"
 
 networks:
   default:
