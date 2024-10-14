@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"syscall"
 
-	commons "github.com/destrex271/commons"
 	_ "github.com/joho/godotenv/autoload"
 )
 
 var (
-	httpAddr = commons.EnvString("HTTP_ADDR", ":8080")
+	httpAddr = EnvString("HTTP_ADDR", ":8080")
 
 	serviceRoutes = map[string]string{
 		"/auth": "http://localhost:8081",
@@ -38,6 +38,14 @@ func main() {
 		fmt.Fprintf(w, "API Gateway is healthy")
 	})
 
-	fmt.Println("API Gateway is running on :8000")
-	log.Fatal(http.ListenAndServe(":8000", mux))
+	fmt.Println("API Gateway is running on " + httpAddr)
+	log.Fatal(http.ListenAndServe(httpAddr, mux))
+}
+
+func EnvString(key, fallback string) string {
+	if val, ok := syscall.Getenv(key); ok {
+		return val
+	}
+
+	return fallback
 }

@@ -5,17 +5,17 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"syscall"
 
-	commons "github.com/destrex271/commons"
 	"github.com/gorilla/mux"
 )
 
 func main() {
-	port, err := strconv.Atoi(commons.EnvString("port", "8081"))
+	port, err := strconv.Atoi(EnvString("port", "8081"))
 	if err != nil {
 		panic(err)
 	}
-	store, err := NewStore(commons.EnvString("connection_string", "postgres://postgres:postgres@db:5432/user"))
+	store, err := NewStore(EnvString("connection_string", "postgres://postgres:postgres@db:5432/user"))
 	if err != nil {
 		panic(err)
 	}
@@ -34,4 +34,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
+}
+
+func EnvString(key, fallback string) string {
+	if val, ok := syscall.Getenv(key); ok {
+		return val
+	}
+
+	return fallback
 }
