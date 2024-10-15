@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -38,6 +39,7 @@ func (h *Handler) CreateTripHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Health")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Service is healthy"})
 }

@@ -7,6 +7,8 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - api-gateway
+    networks:
+      - app-network
 
   api-gateway:
     build:
@@ -17,6 +19,13 @@ services:
     depends_on:
       - auth-service
       - trip-service # Add trip service as a dependency
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"] # Adjust the health endpoint as needed
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   api-gateway-2:
     build:
@@ -27,6 +36,13 @@ services:
     depends_on:
       - auth-service
       - trip-service # Add trip service as a dependency
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"] # Adjust the health endpoint as needed
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   auth-service:
     build:
@@ -34,6 +50,15 @@ services:
       dockerfile: Dockerfile
     expose:
       - "8081"
+    environment:
+      - connection_string=postgres://postgres:postgres@auth-postgres:5432/users?sslmode=disable
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"] # Adjust the health endpoint as needed
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   trip-service: # Define the trip service here
     build:
@@ -41,8 +66,46 @@ services:
       dockerfile: Dockerfile
     expose:
       - "8082"
+    depends_on:
+      - trip-postgres
+      - kafka
+    environment:
+      - DB_CONN_STRING=postgres://postgres:postgres@trip-postgres:5432/tripdb?sslmode=disable
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"] # Adjust the health endpoint as needed
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
-  # KAfka
+  # PostgreSQL for Auth Service
+  auth-postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres 
+      POSTGRES_PASSWORD: postgres 
+      POSTGRES_DB: authdb
+    volumes:
+      - ./usersdb:/docker-entrypoint-initdb.d # Directory for auth SQL files
+    networks:
+      - app-network
+    restart: always
+
+  # PostgreSQL for Trip Service
+  trip-postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres 
+      POSTGRES_PASSWORD: postgres 
+      POSTGRES_DB: tripdb
+    volumes:
+      - ./tripsdb:/docker-entrypoint-initdb.d # Directory for trip SQL files
+    networks:
+      - app-network
+    restart: always
+
+  # Kafka
   kafka:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -52,13 +115,20 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
     depends_on:
       - zookeeper
+    networks:
+      - app-network
+    restart: always
 
+  # Zookeeper
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - app-network
+    restart: always
 
 networks:
-  default:
+  app-network: # Define a custom network for all services
     driver: bridge
