@@ -81,10 +81,10 @@ export default function Home() {
               </div>
               <div>
                 <label htmlFor="vehicleType" className="block mb-1">Veichle Type</label>
-                <select onChange={handleChange}>
-                  <option value={0} key={"Small Vehicle"} />
-                  <option value={1} key={"Medium Vehicle"}/>
-                  <option value={2} key={"Large Vehicle"}/>
+                <select id="vehicleType" onChange={handleChange}>
+                  <option value={0} key="Small Vehicle">Small Vehicle</option>
+                  <option value={1} key="Medium Vehicle">Medium Vehicle</option>
+                  <option value={2} key="Large Vehicle">Large Vehicle</option>
                 </select>
               </div>
               <div>
