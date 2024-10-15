@@ -17,7 +17,7 @@
  - Analytics Service: For System Admins, Presents required trip analytics from Analytics DB
 
 Each service is designed in a layered architecture:
-1. Transport Layer 
+1. Transport Layer(Handler and main server) 
 2. Business Logic
 3. Service
 4. Storage
@@ -36,6 +36,18 @@ Trips ERD:
  - PostgreSQL : Relational Database for Users and Trips DB(ER Diagrams present)
  - ClickHouse : Analytics DB(Not implemented/Used in current solution)
 
+## Analysis of current System
+
+### Pros
+ - Independent and highly decoupled componenets in form of microservices
+ - Seperation on Databases according to intesiveness of operations
+ - Usage of message queues promotes asynchronus processing of requests and allows for quick data sharing using pub-sub model
+
+### Cons
+ - No failover strategies added for databases
+ - Monitoring only limited to databases
+ - Limited caching due to the real time nature of the system
+
 ## Requirements
 
 ### Functional Requirements -
@@ -51,6 +63,10 @@ Trips ERD:
     * Average Trip Time
     * Driver Performance
 
+### Non Functional Requirements
+ - Load Balancing 
+ - Various Replication strategies for Databases for High availability
+ - Monitoring of Databases and all services
 
 ## Database Design
 
