@@ -1,14 +1,15 @@
 # Loggistics Connect App
 
+Explanation Video : https://drive.google.com/file/d/1WdifDDiNjTfmVW8HGHu5M3uwfMVZb33L/view?usp=sharing
+
 ## Proposed Designs
 
 ![title](Proto.drawio.png)
 
 **Services**
 
- - User Service: Responsible for CRUD operations on Users Table(Clients)
- - Driver Service: Responsible for CRUD operations on Data in Driver Table
- - Job Assignment Service: Consumes Trip Requests from Message Queue and matches drivers with Users, shows available options
+ - Auth Service: Responsible for CRUD operations on Users Table(Clients) - Implemented
+ - Job Assignment Service: Consumes Trip Requests from Message Queue and matches drivers with Users, shows available options - Implemented
  - Location Updation Service: 
     * From Driver: Publish Data to GPS location queue
     * From User : Consume Data from GPS location queue and display on MapBox
