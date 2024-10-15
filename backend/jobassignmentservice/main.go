@@ -61,8 +61,9 @@ func main() {
 
 	handler := NewHandler(svc)
 
+	log.Println("Handlers...")
 	mux := http.NewServeMux()
-	mux.HandleFunc("/trips", handler.CreateTripHandler)
+	mux.HandleFunc("/create", handler.CreateTripHandler)
 	mux.HandleFunc("/health", handler.HealthCheckHandler)
 
 	log.Printf("Trip service is running on %s", cfg.HTTPPort)

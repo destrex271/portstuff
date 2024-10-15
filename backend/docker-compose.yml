@@ -16,6 +16,8 @@ services:
       - "8080"
     depends_on:
       - auth-service
+      - trip-service # Add trip service as a dependency
+
   api-gateway-2:
     build:
       context: ./gateway
@@ -24,13 +26,38 @@ services:
       - "8080"
     depends_on:
       - auth-service
+      - trip-service # Add trip service as a dependency
 
   auth-service:
     build:
       context: ./authservice
       dockerfile: Dockerfile
     expose:
-      - "8081:8081"
+      - "8081"
+
+  trip-service: # Define the trip service here
+    build:
+      context: ./jobassignmentservice
+      dockerfile: Dockerfile
+    expose:
+      - "8082"
+
+  # KAfka
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+    depends_on:
+      - zookeeper
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
 
 networks:
   default:

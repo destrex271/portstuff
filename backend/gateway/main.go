@@ -15,7 +15,8 @@ var (
 	httpAddr = EnvString("HTTP_ADDR", ":8080")
 
 	serviceRoutes = map[string]string{
-		"/auth": "http://auth-service:8081",
+		"/auth":  "http://auth-service:8081",
+		"/trips": "http://trip-service:8082",
 	}
 )
 
